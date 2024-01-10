@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: admin-srv-config
+  namespace: optimus-demo
+  labels:
+    app: admin-srv
+data:
+  application.yml: |+
+
+    logging:
+      pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } --- [%t] %-40.40logger{39} : %X{RID} %X{CID} - %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"
+      file.path: /var/log/optimus
+    #  level: debug
+
+    optimus:
+      rest:
+        swagger: true
+
+    server:
+      port: 8036
+      servlet:
+        context-path: /admin-server
+
+    spring:
+      main.allow-circular-references: true
+      mvc:
+        pathmatch:
+          matching-strategy: ant_path_matcher
+      application:
+        name: 'any-server'
+      autoconfigure:
+        exclude:
+          - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+          - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+      data:
+        mongodb:
+          uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/default?ssl=true&authSource=admin
+    remote:
+      appBaseUrls:
+        config-server: "http://config/"
+        admin-server: "http://admin/"
+
+    jwt:
+      secretKey: ${jwt.secretKey}
+      notAfterInMins: 30
+      expiryInMins: 15
+
+    azure:
+      jwksuri: ${azurejwks-url}
+
+    refToken:
+        key: ${refToken.key}
+        iV: 1234567890ABCDEF
+
+    multi-tenant:
+      enabled: true
+      repositoryBasePackage: com.opus.optimus
+      common:
+        dbConnection:
+          uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/common?ssl=true&authSource=admin
+      tenants:
+        dbConnections:
+          optimus:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/optimus?ssl=true&authSource=admin
+          aci:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/aci?ssl=true&authSource=admin
+          optimusfin:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/optimusfin?ssl=true&authSource=admin
+          optimusops:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/optimusops?ssl=true&authSource=admin
+          aciworldwide:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/aciworldwide?ssl=true&authSource=admin
+          adidas-aciworldwide:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/adidas-aciworldwide?ssl=true&authSource=admin
+
+
+    max:
+      page:
+        limit: 300
+
+    access:
+      user:
+        update:
+          allUsers: editUsers, editApiUsers
+          apiUsersOnly: editApiUsers
+          nonApiUsersOnly: editUsers
+        view:
+          allUsers: viewUsers, viewApiUsers
+          apiUsersOnly: viewApiUsers
+          nonApiUsersOnly: viewUsers
+
