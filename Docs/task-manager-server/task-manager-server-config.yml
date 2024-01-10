@@ -1,0 +1,106 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: taskmanager-config
+  namespace: optimus-demo
+  labels:
+    app: taskmanager
+data:
+  application.yml: |+
+
+
+    logging:
+      pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } --- [%t] %-40.40logger{39} : %X{RID} %X{CID} - %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"
+      file.path: /var/log/optimus
+    ##
+
+    server:
+      address: 0.0.0.0
+      port: 8286
+      servlet:
+        context-path: /taskmanager
+      tomcat:
+        accesslog:
+          enabled: true
+          prefix: access-log
+          suffix: .log
+          pattern: '%h %{X-Forwarded-For}i %t %r %s %b %D %p'
+
+    spring:
+      main.allow-circular-references: true
+      mvc:
+        pathmatch:
+          matching-strategy: ant_path_matcher
+      application:
+        name: 'task-manager-server'
+      autoconfigure:
+        exclude:
+          - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+          - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+      data:
+        mongodb:
+          uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/default?ssl=true&authSource=admin
+
+    jwt:
+      secretKey: ${jwt.secretKey}
+      notAfterInMins: 30
+      expiryInMins: 15
+
+    azure:
+      jwksUrl: ${azurejwks-url}
+
+    refToken:
+        key: ${refToken.key}
+        iV: 1234567890ABCDEF
+
+    authToken:
+        key: ${refToken.key}
+        iV: 1234567890ABCDEF
+
+    optimus:
+      rest:
+        swagger: true
+
+    pattern:
+      name: '[a-zA-Z0-9-_]+'
+
+    multi-tenant:
+      enabled: true
+      repositoryBasePackage: com.opus.optimus
+      common:
+        dbConnection:
+          uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/common?ssl=true&authSource=admin
+      tenants:
+        dbConnections:
+          optimus:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/optimus?ssl=true&authSource=admin
+          aci:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/aci?ssl=true&authSource=admin
+          optimusfin:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/optimusfin?ssl=true&authSource=admin
+          optimusops:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/optimusops?ssl=true&authSource=admin
+          aciworldwide:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/aciworldwide?ssl=true&authSource=admin
+          adidas-aciworldwide:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/adidas-aciworldwide?ssl=true&authSource=admin
+
+
+    apache:
+      flink:
+        restUrl:
+          submitJob: http://${FLINK_JOBMANAGER_SERVICE_HOST}:8081/jars/{jarid}/run
+          getJars: http://${FLINK_JOBMANAGER_SERVICE_HOST}:8081/jars
+          cancelJob : http://${FLINK_JOBMANAGER_SERVICE_HOST}:8081/jobs/{jobid}
+          getJob : http://${FLINK_JOBMANAGER_SERVICE_HOST}:8081/jobs/{jobid}
+
+    userContextGenerator:
+      exclude:
+        urlPatterns: /internal/job/**
+
+    wait:
+      time:
+        inSeconds: 10
+
