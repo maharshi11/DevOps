@@ -1,0 +1,57 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-srv-config
+  namespace: optimus-demo
+  labels:
+    app: nginx
+data:
+  default.conf: |+
+
+    server {
+        listen       80;
+        listen  [::]:80;
+        server_name  localhost;
+
+        location / {
+          proxy_pass http://ui-service;
+        }
+
+        location /auth {
+          proxy_pass http://auth-service;
+        }
+
+        location /config/ {
+          proxy_pass http://config-service;
+        }
+
+        location /report-server {
+          proxy_pass http://report-service;
+        }
+
+        location /scheduler-server {
+          proxy_pass http://scheduler-service;
+        }
+
+        location /taskmanager {
+          proxy_pass http://taskmanager-service;
+        }
+        location /admin-server {
+          proxy_pass http://admin-service;
+        }
+
+        location /audit-server {
+          proxy_pass http://audit-service;
+        }
+
+        location /case {
+          proxy_pass http://casemgmt-service;
+          proxy_set_header content-type "application/json";
+        }
+        
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+          root   /usr/share/nginx/html;
+        }
+    }

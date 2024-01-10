@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: nginx
+ namespace: optimus-demo
+ labels:
+  app: nginx
+  component: nginx-server
+spec:
+ selector:
+  matchLabels:
+   app: nginx
+   component: nginx-server
+ replicas: 1
+ revisionHistoryLimit: 5
+ template:
+  metadata:
+   labels:
+    app: nginx
+    component: nginx-server
+  spec:
+   volumes:
+    - name: nginx
+      hostPath:
+       path: /opt/optimus/nginx-dev
+    - name: nginx-develop-logs
+      hostPath:
+       path: /var/log/optimus/nginx-dev
+    - name: optimus-share
+      hostPath:
+       path: /opts3
+   containers:
+    - name: nginx-server
+      image: nginx:1.23.3-alpine-slim
+      imagePullPolicy: IfNotPresent
+      volumeMounts:
+       - name: nginx
+         mountPath: /opt/optimus
+       - name: nginx-develop-logs
+         mountPath: /var/log/optimus
+       - name: optimus-share
+         mountPath: /opts3		 
+      ports:
+       - containerPort: 4005
+   nodeSelector:
+     optimusnode: eksnode01uat

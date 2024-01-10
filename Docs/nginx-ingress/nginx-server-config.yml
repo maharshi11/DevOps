@@ -1,0 +1,121 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-srv-config
+  namespace: optimus-demo
+  labels:
+    app: nginx
+data:
+  default.conf: |+
+
+    server {
+
+        listen       443 ssl http2;
+        #listen       [::]:443 ssl http2 default_server;
+        server_name  _;
+
+        ssl_ciphers ECDH+AESGCM:ECDH+CHACHA20:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS:!AESCCM;
+        ssl_protocols TLSv1.3;
+        ssl_prefer_server_ciphers on;
+        ssl_certificate "/opts3/optimus-share/certs/k8fake.crt";
+        ssl_certificate_key "/opts3/optimus-share/certs/k8fake.key";
+
+        #access_log  /var/log/nginx/host.access.log  main;
+
+
+
+        location / {
+          #root   /usr/share/nginx/html;
+          #index  index.html index.htm;
+          proxy_pass http://ui-service;
+          add_header 'Access-Control-Allow-Origin' '$http_cors_origin';
+          add_header 'X-Frame-Options' 'Deny';
+          add_header 'X-XSS-Protection' '1; mode=block';
+          add_header 'Content-Security-Policy' "default-src 'self' 'unsafe-inline' blob:;img-src 'self' data:";
+        }
+
+
+        location /auth/ {
+          proxy_pass http://auth-service;
+          add_header 'Access-Control-Allow-Origin' '$http_cors_origin';
+          add_header 'X-Frame-Options' 'Deny';
+          add_header 'X-XSS-Protection' '1; mode=block';
+          add_header 'Content-Security-Policy' "default-src 'self' 'unsafe-inline' blob:;img-src 'self' data:";
+        }
+
+        location /config/ {
+          proxy_pass http://config-service;
+          add_header 'Access-Control-Allow-Origin' '$http_cors_origin';
+          add_header 'X-Frame-Options' 'Deny';
+          add_header 'X-XSS-Protection' '1; mode=block';
+          add_header 'Content-Security-Policy' "default-src 'self' 'unsafe-inline' blob:;img-src 'self' data:";
+        }
+
+        location /report-server {
+          proxy_pass http://report-service;
+          add_header 'Access-Control-Allow-Origin' '$http_cors_origin';
+          add_header 'X-Frame-Options' 'Deny';
+          add_header 'X-XSS-Protection' '1; mode=block';
+          add_header 'Content-Security-Policy' "default-src 'self' 'unsafe-inline' blob:;img-src 'self' data:";
+        }
+
+        location /scheduler-server {
+          proxy_pass http://scheduler-service;
+          add_header 'Access-Control-Allow-Origin' '$http_cors_origin';
+          add_header 'X-Frame-Options' 'Deny';
+          add_header 'X-XSS-Protection' '1; mode=block';
+          add_header 'Content-Security-Policy' "default-src 'self' 'unsafe-inline' blob:;img-src 'self' data:";
+        }
+
+        location /taskmanager {
+          proxy_pass http://taskmanager-service;
+          add_header 'Access-Control-Allow-Origin' '$http_cors_origin';
+          add_header 'X-Frame-Options' 'Deny';
+          add_header 'X-XSS-Protection' '1; mode=block';
+          add_header 'Content-Security-Policy' "default-src 'self' 'unsafe-inline' blob:;img-src 'self' data:";
+        }
+
+        location /admin-server {
+          proxy_pass http://admin-service;
+          add_header 'Access-Control-Allow-Origin' '$http_cors_origin';
+          add_header 'X-Frame-Options' 'Deny';
+          add_header 'X-XSS-Protection' '1; mode=block';
+          add_header 'Content-Security-Policy' "default-src 'self' 'unsafe-inline' blob:;img-src 'self' data:";
+        }
+
+        location /audit-server {
+          proxy_pass http://audit-service;
+          add_header 'Access-Control-Allow-Origin' '$http_cors_origin';
+          add_header 'X-Frame-Options' 'Deny';
+          add_header 'X-XSS-Protection' '1; mode=block';
+          add_header 'Content-Security-Policy' "default-src 'self' 'unsafe-inline' blob:;img-src 'self' data:";
+        }
+
+        location /case {
+          proxy_pass http://casemgmt-service;
+          proxy_set_header content-type "application/json";
+        }
+
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+        root   /usr/share/nginx/html;
+        }
+
+    }
+
+#      server {
+#        listen       443 ssl http2 default_server;
+#        listen       [::]:443 ssl http2 default_server;
+#        server_name  _;
+#        root         /usr/share/nginx/html;
+
+#        ssl_ciphers ECDH+AESGCM:ECDH+CHACHA20:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS:!AESCCM;
+#        ssl_protocols TLSv1.3;
+#        ssl_prefer_server_ciphers on;
+#        ssl_certificate "/opts3/optimus-share/certs/k8fake.crt";
+#        ssl_certificate_key "/opts3/optimus-share/certs/k8fake.key";
+
+#      }
+
