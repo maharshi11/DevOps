@@ -1,0 +1,48 @@
+#Configure Postfix SMTP Relay as Office365 SMTP:-
+
+Install postfix
+sudo yum install postfix
+
+Install sasl packages for Postfix
+sudo yum install cyrus-sasl cyrus-sasl-lib cyrus-sasl-plain
+
+In the /etc/postfix/main.cf file add the following lines at the end of the file
+########################################################
+
+This tells Postfix to hand off all messages to Office365, and never do direct delivery.
+relayhost = [smtp.office365.com]:587
+
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_security_options = noanonymous
+smtp_tls_security_level = may
+header_size_limit = 409600
+########################################################
+
+4. Create a new file /etc/postfix/sasl_passwd and add the following line (change user and passwd)
+
+[smtp.office365.com]:587 user@opusconsulting.com:passwd
+
+5. Postfix reads the login info from the Database file so it is necessary that we should convert this file to a *.db format.
+In order to do that run the below command.
+
+postmap hash:/etc/postfix/sasl_passwd
+
+6. Change the file permission for two files (sasl_passwd & sasl_passwd.db)
+
+sudo chmod 0600 /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db
+
+7. Enable and restart the Postfix service.
+systemctl enable postfix
+systemctl restart postfix
+
+8. To check whether mail working or not use the below command and check your mail box.
+
+echo "Test mail from postfix" | mail -s "Test Postfix" -r "monitor.optimus@opusconsulting.com" C-Santhosh.P@opusconsulting.com
+
+9. To ensure that postfix is sending mail properly run the below command and match the result:
+
+"""""""""""""""""""""""
+[root@uatnginx postfix]# tail -f /var/log/maillog
+Jan  5 15:22:27 uatnginx postfix/pickup[19011]: D0355C6B905: uid=0
+------------------------------------------------
