@@ -1,0 +1,420 @@
+kubectl get pods -n nsf
+kubectl logs -f pod -n ns
+kubectl describe pod   -n optimus-qa
+kubectl exec -it schedular-cd666fd5d-st5tj /bin/bash -n optimus-qa
+kubectl delete  pod schedular-cd666fd5d-sq5sx -n optimus-qa
+kubectl describe service <service-name> -n optimus-qa
+cat /home/rohangh/.kube/config
+cat ~/.kube/config
+kubectl create -f role-deployment-manager.yaml
+kubectl get service -n optimus                                                 
+kubectl get deployment -n optimus
+kubectl get namespace
+kubectl scale --replicas=0 deployment/flink-jobmanager
+kubectl scale --replicas=0 deployment/flink-taskmanager
+kubeadm certs renew all
+kubeadm certs check-expiration
+systemctl status kubelet
+kubectl config set-context --current --namespace=optimus-prod
+kubectl get pods -n ingress-nginx
+kubectl logs -f ingress-nginx-controller-7fc74cf778-zp6z5
+kubectl logs -f ingress-nginx-controller-7fc74cf778-zp6z5 -n ingress-nginx
+kubectl get jobs -n optimus-qa
+kubectl get jobs -n optimus-qa | awk '$2 ~ "1/1" {print $1}' | xargs kubectl delete job
+kubectl get jobs -n kube-system --no-headers=true | awk '/deployment-restart/{print $1}'| xargs  kubectl delete -n kube-system job
+kubectl patch cronjobs -n kube-system  deployment-restart -p '{"spec" : {"suspend" : true }}'
+kubectl get pods -n optimus-qa --no-headers=true | awk '/taskmanager/{print $1}'| xargs  kubectl delete -n optimus-qa pod
+kubectl get pods -o jsonpath="{.items[*].spec.containers[*].image}"
+kubectl get pods -o jsonpath="{.items[*].spec.containers[*].image}" |\tr -s '[[:space:]]' '\n' |\sort |\uniq -c
+kubectl delete pod report-srv-7bc95f885f-xxb2s --force --grace-period=0
+kubectl get pod -n optimus-qa | grep Evicted | awk '{print $1}' | xargs kubectl delete pod -n optimus-qa
+kubetl edit deployment/admin-srv
+
+nginx -s reload
+
+kubectl patch deployment optimus-ui -n optimus-prod -p \
+'{"spec":{"template":{"spec":{"containers":[{"name":"ui-server","image":"672567831239.dkr.ecr.ap-south-1.amazonaws.com/opus-consulting-solutions/ui:LATEST"}]}}}}'
+
+grep -Irl download *
+grep -Irl "godaddy" *
+grep -Irl "chmod 777" *.sh | xargs sed -i 's/chmod 777/chmod 750/g'
+scp -i ~/.ssh/id_rsa -P 4020 -r *64* santhoshp-uat@172.24.10.191:/home/santhoshp-uat/.
+gzip -d spring.log.2022-02-24.0.gz
+
+docker images --filter "dangling=true"  
+docker images
+docker rmi -f
+docker ps
+docker ps -a
+docker rm
+docker exec -it containerID /bin/bash
+aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 672567831239.dkr.ecr.ap-south-1.amazonaws.com
+docker image pull 672567831239.dkr.ecr.ap-south-1.amazonaws.com/opus-consulting-solutions/nginx-revproxy:PROD-1.0.0
+docker run -itd -p 80:80 -p 443:443 fe74fb30d6d5
+sudo systemctl start docker
+sudo systemctl status docker
+docker tag c9d6f8992b4d 672567831239.dkr.ecr.ap-south-1.amazonaws.com/ui:uinode
+docker tag ui:latest 672567831239.dkr.ecr.ap-south-1.amazonaws.com/ui:latest
+docker tag ac062d354af7 672567831239.dkr.ecr.ap-south-1.amazonaws.com/ui:latest
+docker push 672567831239.dkr.ecr.ap-south-1.amazonaws.com/ui:latest
+docker load -i /tmp/Dockerimage/nginx-revproxy:2021_08_03_20_45_04.tar
+docker run -itd -p 80:80 -p 443:443 --name revproxy01 nginx-revproxy:2021_08_03_20_45_04
+docker run -itd -p 9000:9000 -v /opt/optimus-share:/opt/optimus-share -v /opt/optimus-share/reportwizard:/home/download --name cent7flink_inst cent7flink /bin/bash -Uat
+docker run -itd  -p 9000:9000 -v /opts3/optimus-share:/opt/optimus-share -v /opts3/optimus-share/reportwizard:/home/download  --name cent7flink_inst cent7flink /bin/bash -Prod
+docker-compose -f production-cluster.yml up --force-recreate -d
+docker-compose -f production-cluster.yml up -d
+docker-compose -f production-cluster.yml restart
+docker-compose -f /data/wazuh-docker/production-cluster.yml restart
+
+yum update jenkins --nogpgcheck - to upgrade jenkins in Linux
+
+
+su -s /bin/bash jenkins
+zip -r file.zip file
+ls | wc -l
+du -sch /* --exclude=/data --exclude=/proc |grep G
+du -sch * |grep G
+kubectl logs -f report-srv-56d7f4fb6b-98vsb -n optimus-qa
+tar -cvzf flink-1.9.3-bin-scala_2.12.tgz flink-1.9.3-bin-scala_2.12
+kubectl get svc - to check port no
+rm -rf system-30*
+systemctl status crond
+systemctl stop crond
+systemctl start crond
+service apache2 status
+service apache2 start
+cat /var/log/cron
+## check the cron status
+service cron status
+service cron start
+service cron stop
+tnc IP -port PORT
+ifconfig
+sudo scp -r /opt/foldername username@ip:/opt/filename
+scp -i ~/.ssh/uatenvaccess -P 4020 -r /home/mohanba-uat/toolset-batch-workflow-executor-1.0.jar mohanba-uat@172.24.10.191:/home/mohanba-uat/
+
+export NODE_OPTIONS='--max-old-space-size=4096'
+npm run build --max-old-space-size=3072
+npm run build:staging --max-old-space-size=4096
+npm run build
+docker run -itd  -p 9000:9000 ac062d354af7 /bin/bash
+to Check Gradle Dependencies: ./gradlew rest:dependencies (Execute from Working Directory)
+
+export NODE_OPTIONS='--max-old-space-size=4096'
+npm run build --max-old-space-size=3072
+npm run build:staging --max-old-space-size=4096
+npm run build
+
+docker ps
+docker run -d -p6000:6347 --name redis-older(names) imagename -to change port& Names
+docker logs redis-older (or) docker logs containerID -to check logs
+docker network ls
+docker create mongo-network
+docker built -t filename . 
+docker logs --tail 100 revproxy01
+
+az acr login --name OptimusACR
+az acr repository list -n OptimusACR
+az acr repository show -n OptimusACR --repository optimus-ui
+az acr repository show-tags -n OptimusACR --repository optimus-ui
+
+
+qa dumb
+mongorestore -u "optappuser" -p "FCm7rMzaQBX2SGxe" --authenticationDatabase "admin" --port 44071 --db common /opt/data/44071/common 
+mongorestore -u "optappuser" -p "FCm7rMzaQBX2SGxe" --authenticationDatabase "admin" --port 44071 --db firstData /opt/data/44071/firstData 
+mongorestore -u "optappuser" -p "FCm7rMzaQBX2SGxe" --authenticationDatabase "admin" --port 44071 --db optimus /opt/data/44071/optimus 
+mongorestore -u "optappuser" -p "FCm7rMzaQBX2SGxe" --authenticationDatabase "admin" --port 44071 --db opusconsultingTest /opt/data/44071/opusconsultingTest --drop
+mongorestore -u "optappuser" -p "FCm7rMzaQBX2SGxe" --authenticationDatabase "admin" --port 44071 --db phicommerce /opt/data/44071/phicommerce 
+mongorestore -u "optappuser" -p "FCm7rMzaQBX2SGxe" --authenticationDatabase "admin" --port 44071 --db sutherland /opt/data/44071/sutherland 
+mongorestore -u "optappuser" -p "FCm7rMzaQBX2SGxe" --authenticationDatabase "admin" --port 44071 --db target /opt/data/44071/target 
+mongorestore -u "optappuser" -p "FCm7rMzaQBX2SGxe" --authenticationDatabase "admin" --port 44071 --db tmobile /opt/data/44071/tmobile 
+
+sudo yum install -y nodejs
+sudo rm -rf /usr/local/bin/npm /usr/local/share/man/man1/node* /usr/local/lib/dtrace/node.d ~/.npm ~/.node-gyp /opt/local/bin/node /opt/local/include/node /opt/local/lib/node_modules
+sudo rm -rf /usr/local/lib/node*
+sudo rm -rf /usr/local/include/node*
+sudo rm -rf /usr/local/bin/node*
+yum groupinstall 'Development Tools'
+
+aws configure list-profiles
+aws sts get-caller-identity
+--------------------------------
+mount s3:
+s3fs optimus-share /opts3/ -o nonempty -o allow_other
+
+unmount s3:
+umount /opts3
+------------------------------------
+
+aws ecr list-images --repository-name opus-consulting-solutions/toolset-scheduler
+aws ecr batch-delete-image --repository-name opus-consulting-solutions/toolset-scheduler --image-ids imageTag=2.0.1
+
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: test
+  labels:
+    name: test
+	
+----------------------------------------------------------------------------------------------------------
+ssh -i ~/.ssh/uatenvaccess -p 4020 mohanba-uat@172.24.10.191
+#cp -r /var/lib/jenkins/workspace/Optimus_UAT_Publish/toolset-batch-workflow-executor/build/libs /home/mohanba-uat
+cd /var/lib/jenkins/workspace/Optimus_UAT_Publish/toolset-batch-workflow-executor/build/libs
+cp toolset-batch-workflow-executor-1.0.jar /home/mohanba-uat
+#execute below command from Jump server
+scp -i ~/.ssh/uatenvaccess -p 4020 -r mohanba-uat@172.24.10.191:/home/mohanba-uat/toolset-batch-workflow-executor-5.0.jar /home/mohanba-uat/ - to Download
+
+scp -i ~/.ssh/uatenvaccess -P 4020 -r /home/mohanba-uat/toolset mohanba-uat@172.24.10.191:/home/mohanba-uat/. - to Upload
+
+http://13.232.63.228:8080/job/Optimus_UAT_Publish/job/toolset-batch-workflow-executor/62/execution/node/3/ws/build/libs/toolset-batch-workflow-executor-5.0.jar
+----------------------------------------------------------------------------------------------------------------------------------
+kubectl scale --replicas=0 deployment/flink-taskmanager
+kubectl get pods -n optimus-uat -o jsonpath="{.items[*].spec.containers[*].image}" |\tr -s '[[:space:]]' '\n' |\sort |\uniq -c
+kubectl get pods -n optimus-prod -o jsonpath="{.items[*].spec.containers[*].image}" |\tr -s '[[:space:]]' '\n' |\sort |\uniq -c
+----------------------------------------------------------------------------------------------------------------------
+kubectl scale --replicas=0 deployment/flink-taskmanager -n optimus-uat
+kubectl scale --replicas=0 deployment/flink-jobmanager
+--------------------------------------------------------------------------------
+aws eks list-clusters
+aws eks get-token --cluster-name optimus-uat-eks-01
+aws eks get-token --cluster-name optimus-prod-eks-01
+-------------------------------------------------------
+cd ~/.kube
+ls
+cp config-uatworking config
+--------------------------------------------------------
+aws eks get-token --cluster-name optimus-uat-eks-cluster01
+
+./paysafesftptransfer.sh 160122 20220116 to fetch file for 16 Jan
+
+mongodb://optappuser:h4E5ubmwvZU83raSztfM@10.11.14.70,10.11.14.80,10.11.14.85:27017/?authSource=admin&authMechanism=SCRAM-SHA-256&replicaSet=optimus&readPreference=primary&ssl=false
+
+keytool -importcert -file "flink-selfsigned-crt.pem" -alias chooseAname -keystore "flink-selfsigned.jks"
+-------------------------------------------------------
+netstat -tunlp | grep node
+ps -aux | grep 11403
+kill 11403
+-------------------------------------------------------------------
+kubectl label nodes ip-172-23-20-83.ap-south-1.compute.internal optimusnode=eksnode01prod
+kubectl label nodes ip-172-23-20-96.ap-south-1.compute.internal optimusnode=eksnode02prod
+kubectl label nodes ip-172-23-20-125.ap-south-1.compute.internal optimusnode=eksnode03prod
+-----
+kubectl label nodes vm-2 optimusnode=vm-2
+kubectl label nodes vm-3 optimusnode=vm-3
+kubectl label nodes vm-4 optimusnode=vm-4
+
+ip-172-23-20-106.ap-south-1.compute.internal   Ready    <none>   110d   v1.22.6-eks-7d68063
+ip-172-23-20-109.ap-south-1.compute.internal   Ready    <none>   10d    v1.22.6-eks-7d68063
+ip-172-23-20-206.ap-south-1.compute.internal   Ready    <none>   122d   v1.22.6-eks-7d68063
+
+======================================================================
+https://13.127.58.117:3100/d/W5KDrdKnz/master-dashboard?orgId=1 - UAT Grafana
+
+
+/var/lib/jenkins/workspace/Optimus_SonarScan_Pipeline/optimus-sonar-01/source-reader/build
+kubectl config set-context --current --namespace=optimus-qa
+---------------------------------------------------------------------
+umount /opts3
+history | grep s3fs
+s3fs optimus-share /opts3 -o nonempty -o allow_other - UAT Jenkins
+s3fs optimus-share /data/s3bucket -o nonempty -o allow_other - UAT Sftp
+cd /opts3/
+kubectl get pods
+kubectl exec -it flink-taskmanager-bccf565cf-jcp8l /bin/bash
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+/data/s3bucket/optimus-share - uat sftp
+-----------------------------------------------------------
+1. mongo --host="optimus/10.11.14.79,10.11.14.80,10.10.19.85" -u "mohanb" -p "S0nMcvzRl6mBF8jX" --authenticationDatabase "admin"
+2. mongodump -d DONOTTOUCH_NEWTENANT -u "mohanb" -p "S0nMcvzRl6mBF8jX" --authenticationDatabase "admin" --port 27017 -o /home/mohanba/DONOTTOUCH_NEWTENANT_10June2022
+3. mongorestore --host="optimus/10.11.14.79,10.11.14.80,10.10.19.85" -u "santhoshp" --authenticationDatabase "admin" --db aci /home/mohanba/DONOTTOUCH_NEWTENANT_10June2022/DONOTTOUCH_NEWTENANT
+
+rs.isMaster().primary
+/var/lib/jenkins/.m2/repository/com/opus/optimus/toolset/common
+-------------------------------------------------------------------------
+kubectl describe deployment optimus-ui
+kubectl get svc
+kubectl describe svc ui-service
+curl -vk https://172.24.20.141:3000
+curl -vk http://172.24.20.141:3000
+service s3fs status
+----------------------------------------------
+service mongod status
+service jenkins status
+service jenkins start
+systemctl start jenkins
+journalctl -xe
+journalctl -xe
+service logstash stop
+service jenkins restart
+journalctl -xe
+tail -f /var/log/jenkins/*
+tail -f /var/log/jenkins/jenkins.log
+cat /var/log/jenkins/jenkins.log
+netstat -tulpn | grep 8080
+ps -aux | grep 1373
+ll /opt/optimus-share/
+cat /etc/fstab
+10.11.14.80:/opt/optimus-share /opt/optimus-share
+mount 10.11.14.80:/opt/optimus-share /opt/optimus-share
+kill -9 1373
+service jenkins restart
+df -h
+/data/26thAug_syslogs
+------------------------------------------------------------
+curl -XGET https://localhost:9200/_cat/nodes?v -u 'admin:admin' --insecure
+curl -XGET https://localhost:9200/_cat/nodes?v -u 'admin:OpTimus#2@22' --insecure ----To check wazuh Primay and Secondary
+
+scp -i ~/.ssh/az-uat -P 4020 -r mohanba-uat@52.186.150.64:/home/mohanba-uat/jenkins_bk /home/mohanba-uat/ - Download(other vm to jump)
+scp -i ~/.ssh/id_rsa -P 4020 -r /home/mohanba-uat/batch mohanba-uat@172.29.2.4:/home/mohanba-uat/. - Upload (Jump to other vm)
+scp -r /home/mohanba/toolset-batch-workflow-executor-6.0-aws-useast-prod-2.16.0.3.jar elk:/home/mohanba/.
+
+ curl -X POST -H "Expect:" -F "jarfile=@/home/mohanba/toolset-batch-workflow-executor-6.0-azureprod_2.17.0.1"
+ http://172.27.4.130:8081/jars/upload
+ 
+scp -i ~/.ssh/id_rsa -P 4020 -r /home/mohanba/toolset-batch-workflow-executor-6.0-azureprod_2.17.0.1 mohanba@172.27.2.4:/home/mohanba/. 
+
+--------------------------------------------------------------
+systemctl status grafana-server.service
+systemctl status prometheus
+systemctl status node_exporter
+-----------------------------------------------------------------
+/var/ossec/etc/ossec.conf -To suppress wazuh alert add path here and restart wazuh-agent
+service wazuh-agent status
+<ignore type="sregex">/var/lib/jenkins/workspace</ignore>
+<ignore type="sregex">/var/lib/kubelet/pods/</ignore>
+<ignore type="sregex">/var/lib/docker/overlay2/</ignore>
+-----------------------------------------------------------------------
+chmod a=rx,u+ws /usr/bin/sudo
+---s--x--x  1 root root      165528 Dec  7  2021 sudo
+--------------------------------------------------------------------------
+scp -r /home/mohanba/toolset-batch-workflow-executor-6.0-aws-useast-prod-2.16.0.3.jar elk:/home/mohanba/. 
+scp -i /home.mohanba@108.136.156.170:/home/mohanba/documents-prod /home/mohanba/
+
+curl -X POST -H "Expect:" -F "jarfile=@/home/mohanba/toolset-batch-workflow-executor-6.0-aws-jakarta-prod-2.16.0.3.jar" http://172.20.5.239:8081/jars/upload
+
+scp -r /home/mohanba-dev/toolset-batch-workflow-executor-6.0-aws-useast-prod-2.16.0.3.jar elk:/home/mohanba/.
+
+scp -i ~/.ssh/mohanba-dev -P 4020 -r mohanba-dev@52.186.150.64:/home/mohanba-dev/documents-qa /home/mohanba-dev/
+
+scp -r mohanba-dev@qajenkins:/home/mohanba-dev/documents-qa /home/mohanba-dev/
+scp -i ~/.ssh/mohanba-uat -P 4020 -r mohanba-uat@20.88.173.237:/home/mohanba-uat/. /home/mohanba-uat/
+scp -r /home/mohanba/. 172.29.5.6:/home/mohanba/.
+172.29.5.6
+
+scp -r mohanba-uat@sftp:/home/mohanba-uat/. /home/mohanba-uat/
+grep -Irl "optimus-qa" * | xargs sed -i 's/optimus-qa/optimus-dev/g'
+---------------------------------------------
+NetworkChuck
+touch -d 2023-02-02 filename
+ln filename filename
+find / -name "filename"
+find . -type f -name ".*" - hiddenfile
+find . -type f -empty --to check empty dir
+find . -perm /a=x -to check executable file
+echo "3+5+100" | bc
+pkill -f jenkins
+
+docker exec -it <container_name> /bin/bash -c "cd /bin && sh ./restart.sh"
+
+--------------------------------------------------------
+faillock --user mohanba-uat --reset 
+
+1f07635458974c22a5022ae6f0bd6c80 chrome://settings/passwords
+
+sonarqube token - dd741d9b6c857d39ee0483ef60649de4a0cabfa0
+
+plugins {
+  id "org.sonarqube" version "2.7"
+}
+
+./gradlew sonarqube \
+  -Dsonar.projectKey=test \
+  -Dsonar.host.url=http://20.127.7.227:9000 \
+  -Dsonar.login=dd741d9b6c857d39ee0483ef60649de4a0cabfa0
+
+scp -r /home/mohanba/toolset-batch-workflow-executor-6.0-AWS-EUS-PROD-2.17.0.jar elk:/home/mohanba/.
+-----------------------------
+aws ecr get-login-password --region ap-south-1 | docker login --username ecr_dockeruser_uat --password-stdin 672567831239.dkr.ecr.ap-south-1.amazonaws.com
+
+
+    docker login -u ecr_dockeruser_uat -p +$We')hzmb1HVMC -e none https://672567831239.dkr.ecr.ap-south-1.amazonaws.com
+	
+	
+aws ecr get-login docker login –u ecr_dockeruser_uat –p +$We')hzmb1HVMC –e none https://672567831239.dkr.ecr.ap-south-1.amazonaws.com
+
+ecs-cli configure profile --profile-name optimus_uat_ecscliprofile --access-key AKIAZZGBKVLDY4E42ZFE --secret-key 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
+skip-ecs-cli configure --cluster optimus-uat-eks-cluster --default-launch-type launch_type --region ap-south-1 --config-name configuration_name
+
+aws ecr get-login-password --region ap-south-1 | docker login --username ecr_dockeruser_uat --password-stdin 672567831239.dkr.ecr.ap-south-1.amazonaws.com
+
+aws ecr get-login-password --region ap-south-1 | docker login --username ecr_dockeruser_uat --password-stdin 672567831239.dkr.ecr.ap-south-1.amazonaws.com
+--------------------------
+==================================================
+AWS cred
+
+rmohanbabu12987456231@gmail.com
+Zxcv@1234*!
+Opus - Microsoft Password :
+18601207777
+----------------------
+du -h -d 1 -t 1G /
+find /var/log/audit -type f -mtime +30 -exec mv '{}' /data/bakup-auditlogs/auditlog-17NOV2023/ \;
+
+cut -d: -f1 /etc/passwd
+
+history -c -clear all
+history -d 67 - clear one line
+
+sudo hostnamectl set-hostname mine
+export HOSTNAME=mine
+paste <(cal 11 2023) <(cal 2 1996) | awk '{print NF}'
+ncpa.cpl - to net wifi password
+
+tarnished 
+vanquished 
+Margit 
+
+faillock --user mohanba-uat --reset
+
+sudo yum install java-17-openjdk
+apk add openjdk17-jdk
+sudo yum install java-11-openjdk
+which kubectl
+kubectl config get-contexts
+kubectl config use-context arn:aws:eks:ap-south-1:630376086731:cluster/K8 
+
+101248224578
+Roja@7766
+Roja@8073132896
+242554236141
+8073132896
+
+918010074609731 
+SN# CND91023WQ
+HP Laptop 15-da0327TU 
+Prod ID: 5AY25PA#ACJ
+November@4321
+
+December@4321
+
+Zombie:
+* ps -A -ostat,pid,ppid | grep -e '[zZ]'
+* kill -9 1714 1434
+* ps -A -ostat,pid,ppid | grep -e '[zZ]'
+* top
+
+ systemctl status grafana-server.service
+ awk '(NR == 1) || (FNR > 1)' *.csv > DotCom_Optimus_TLog_Merged.csv
+/data/s3bucket/optimus-share/optimus-share/sephora/sftpcron/csvmerge/
+
+grep -Irl "godaddy" *.sh | xargs sed -i 's/godaddy/GoDaddy/g'
+
+---------------------------------
+yum install mariadb-server -y
+systemctl enable mariadb
+systemctl status mariadb
+systemctl start mariadb
+systemctl status mariadb
+mysql -h database-1.cdqzszwgtaip.ap-south-1.rds.amazonaws.com -P 3306 -u admin -p
+-------------------------------------
