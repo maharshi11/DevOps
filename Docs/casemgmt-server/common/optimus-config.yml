@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: optimus
+  namespace: optimus-demo
+data:
+  azurejwks-url: https://login.windows.net/common/discovery/keys

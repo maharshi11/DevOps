@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodbcosmos
+  namespace: optimus-demo
+data:
+  mongodb.cosmos.host: optimustrunk26-dev-pri.hjwru.mongodb.net
+  mongodb.cosmos.port: "27017"

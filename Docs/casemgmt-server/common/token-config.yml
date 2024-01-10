@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: token
+  namespace: optimus-demo
+data:
+  jwt.secretKey: mzaqwsxcde1234rfvbgt56yhnmjuikl987hgfred450ouyv2
+  refToken.key: crElRB7WEMCDjeZgetJybw==
