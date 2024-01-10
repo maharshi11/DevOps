@@ -1,0 +1,25 @@
+monbsgl@gmail.com/Zxcv@007
+
+DD_API_KEY=e1222276b492a91a1e2828711515c14a DD_SITE="datadoghq.eu" bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script_agent7.sh)"
+
+DD_API_KEY=e1222276b492a91a1e2828711515c14a DD_SITE="datadoghq.eu" DD_APM_INSTRUMENTATION_ENABLED=host bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script_agent7.sh)"
+
+
+systemctl status datadog-agent
+systemctl stop datadog-agent
+systemctl start datadog-agent
+systemctl restart datadog-agent
+datadog-agent version
+datadog-agent #help
+datadog-agent configcheck
+datadog-agent config
+#Datadog process monitoring
+vi /etc/datadog-agent/datadog.yaml #search for (modify as per below) - process_config: # after enble this we can access to check PID
+process_config:
+
+  ## @param process_collection - custom object - optional
+  ## Specifies settings for collecting processes.
+  process_collection:
+    ## @param enabled - boolean - optional - default: false
+    ## Enables collection of information about running processes.
+    enabled: true
