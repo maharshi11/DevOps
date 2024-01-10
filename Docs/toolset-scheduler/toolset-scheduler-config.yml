@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: schedular-config
+  namespace: optimus-demo
+  labels:
+    app: schedular
+data:
+  application.yml: |+
+
+
+    logging:
+      pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } --- [%t] %-40.40logger{39} : %X{RID} %X{CID} - %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"
+      file.path: /var/log/optimus
+    ##
+
+    server:
+      address: 0.0.0.0
+      port: 8285
+      servlet:
+        context-path: /scheduler-server
+      tomcat:
+        accesslog:
+          enabled: true
+          prefix: access-log
+          suffix: .log
+          pattern: '%h %{X-Forwarded-For}i %t %r %s %b %D %p'
+
+    jwt:
+      secretKey: ${jwt.secretKey}
+      notAfterInMins: 30
+      expiryInMins: 15
+
+    azure:
+      jwksUrl: ${azurejwks-url}
+
+    refToken:
+        key: ${refToken.key}
+        iV: 1234567890ABCDEF
+
+    authToken:
+        key: ${refToken.key}
+        iV: 1234567890ABCDEF
+    ##
+
+    spring:
+      main.allow-circular-references: true
+      mvc:
+        pathmatch:
+          matching-strategy: ant_path_matcher
+      data:
+        mongodb:
+          uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/default?ssl=true&authSource=admin&retrywrites=false      
+      autoconfigure:
+        exclude:
+          - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+          - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+
+
+    optimus:
+      rest:
+        swagger: true
+
+    pattern:
+      name: '[a-zA-Z0-9-_]+'
+
+
+    multi-tenant:
+      enabled: true
+      repositoryBasePackage: com.opus.optimus
+      common:
+        dbConnection:
+          uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/common?ssl=true&authSource=admin&retrywrites=false
+      tenants:
+        dbConnections:
+          optimus:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/optimus?ssl=true&authSource=admin&retrywrites=false
+          aci:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/aci?ssl=true&authSource=admin&retrywrites=false
+          optimusfin:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/optimusfin?ssl=true&authSource=admin&retrywrites=false
+          optimusops:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/optimusops?ssl=true&authSource=admin&retrywrites=false
+          aciworldwide:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/aciworldwide?ssl=true&authSource=admin
+          adidas-aciworldwide:
+            uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/adidas-aciworldwide?ssl=true&authSource=admin
+
+    task:
+      manager:
+        restUrl:
+          runJob: http://${TASKMANAGER_SERVICE_SERVICE_HOST}:80/taskmanager/internal/job
+

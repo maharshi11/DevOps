@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: schedular
+ namespace: optimus-demo
+ labels:
+  app: schedular
+spec:
+ selector:
+  matchLabels:
+   app: schedular
+ replicas: 1
+ template:
+  metadata:
+   labels:
+    app: schedular
+  spec:
+   volumes:
+    - name: schedular-volume
+      configMap:
+        name: schedular-config
+        items:
+        - key: application.yml
+          path: application.yml
+    - name: optimus-schedular
+      hostPath:
+       path: /opt/optimus/schedular_srv
+    - name: optimus-schedular-logs
+      hostPath:
+       path: /var/log/optimus/schedular-srv
+    - name: optimus-share
+      hostPath:
+       path: /opts3
+    - name: tmp
+      emptyDir: {}
+   serviceAccountName: ""
+   automountServiceAccountToken: false  
+   containers:
+    - name: schedular-server
+      image: optimusacr01.azurecr.io/toolset-scheduler:2.0.0-1
+      imagePullPolicy: Always
+      resources:
+        limits:
+          cpu: 1
+          memory: 1G
+        requests:
+          cpu: 0.5
+          memory: 0.5G
+      securityContext:
+        privileged: false
+        runAsNonRoot: false
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+      env:
+       - name: mongodb.cosmos.host
+         valueFrom:
+          configMapKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.host
+       - name: mongodb.cosmos.port
+         valueFrom:
+          configMapKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.port
+       - name: azurejwks-url
+         valueFrom:
+          configMapKeyRef:
+           name: optimus
+           key: azurejwks-url
+       - name: mongodb.cosmos.username
+         valueFrom:
+          secretKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.username
+       - name: mongodb.cosmos.password
+         valueFrom:
+          secretKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.password
+       - name: jwt.secretKey
+         valueFrom:
+          secretKeyRef:
+           name: token
+           key: jwt.secretKey
+       - name: refToken.key
+         valueFrom:
+          secretKeyRef:
+           name: token
+           key: refToken.key
+      volumeMounts:
+       - name: schedular-volume
+         mountPath: /tmp/conf
+       - name: optimus-schedular
+         mountPath: /opt/optimus
+       - name: optimus-schedular-logs
+         mountPath: /var/log/optimus
+       - name: optimus-share
+         mountPath: /opts3
+       - name: tmp
+         mountPath: /tmp
+      ports:
+       - containerPort: 8285
+   nodeSelector:
+     optimusnode: eksnode02uat
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+   name: scheduler-service
+   namespace: optimus-demo
+   labels:
+    app: schedular
+spec:
+   selector:
+    app: schedular
+   ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8285
+
