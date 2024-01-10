@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: ui
+ namespace: optimus-demo
+ labels:
+  app: ui
+spec:
+ selector:
+  matchLabels:
+   app: ui
+ replicas: 1
+ revisionHistoryLimit: 5
+ template:
+  metadata:
+   labels:
+    app: ui
+  spec:
+   volumes:
+    - name: ui
+      hostPath:
+       path: /opt/optimus/ui
+    - name: ui-logs
+      hostPath:
+       path: /var/log/optimus/ui-logs
+    - name: tmp
+      emptyDir: {}
+   serviceAccountName: ""
+   automountServiceAccountToken: false
+   containers:
+    - name: ui-server
+      image: optimusacr01.azurecr.io/ui:3.1.0-1-AZUAT
+      imagePullPolicy: IfNotPresent
+      resources:
+        limits:
+          cpu: 0.2
+          memory: 0.5G
+        requests:
+          cpu: 0.2
+          memory: 0.2G
+      securityContext:
+        privileged: false
+        runAsUser: 2000
+        runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+      volumeMounts:
+       - name: ui
+         mountPath: /opt/optimus
+       - name: ui-logs
+         mountPath: /var/log/optimus
+       - name: tmp
+         mountPath: /tmp
+      ports:
+       - containerPort: 3000
+   nodeSelector:
+     optimusnode: eksnode03uat
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: ui-service
+   namespace: optimus-demo
+   labels:
+    app: ui
+spec:
+   selector:
+    app: ui
+   ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+
