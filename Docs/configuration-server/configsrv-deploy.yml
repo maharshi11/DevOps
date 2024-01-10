@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: configsrv
+ namespace: optimus-demo
+ labels:
+  app: configsrv
+spec:
+ selector:
+  matchLabels:
+   app: configsrv
+ replicas: 1
+ template:
+  metadata:
+   labels:
+    app: configsrv
+  spec:
+   volumes:
+    - name: configsrv-volume
+      configMap:
+        name: configsrv-config
+        items:
+        - key: application.yml
+          path: application.yml
+    - name: optimus-config-server
+      hostPath:
+       path: /opt/optimus/config_srv
+    - name: optimus-config-server-logs
+      hostPath:
+       path: /var/log/optimus/config-srv
+    - name: tmp
+      emptyDir: {}
+   serviceAccountName: ""
+   automountServiceAccountToken: false  
+   containers:
+    - name: config-mgt-server
+      image: optimusacr01.azurecr.io/configuration-server:3.1.0
+      imagePullPolicy: Always
+      resources:
+        limits:
+          cpu: 0.2
+          memory: 0.5G
+        requests:
+          cpu: 0.2
+          memory: 0.2G
+      securityContext:
+        privileged: false
+        runAsUser: 2000
+        runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+      env:
+       - name: mongodb.cosmos.host
+         valueFrom:
+          configMapKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.host
+       - name: mongodb.cosmos.port
+         valueFrom:
+          configMapKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.port
+       - name: azurejwks-url
+         valueFrom:
+          configMapKeyRef:
+           name: optimus
+           key: azurejwks-url
+       - name: mongodb.cosmos.username
+         valueFrom:
+          secretKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.username
+       - name: mongodb.cosmos.password
+         valueFrom:
+          secretKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.password
+       - name: jwt.secretKey
+         valueFrom:
+          secretKeyRef:
+           name: token
+           key: jwt.secretKey
+       - name: refToken.key
+         valueFrom:
+          secretKeyRef:
+           name: token
+           key: refToken.key
+      volumeMounts:
+       - name: configsrv-volume
+         mountPath: /tmp/conf
+       - name: optimus-config-server
+         mountPath: /opt/optimus
+       - name: optimus-config-server-logs
+         mountPath: /var/log/optimus
+       - name: tmp
+         mountPath: /tmp
+      ports:
+       - containerPort: 8082
+   nodeSelector:
+     optimusnode: eksnode03uat
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: config-service
+   namespace: optimus-demo
+   labels:
+    app: configsrv
+spec:
+   selector:
+    app: configsrv
+   ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8082
+
