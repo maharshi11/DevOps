@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flink-jobmanager
+  namespace: optimus-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flink
+      component: jobmanager
+  template:
+    metadata:
+      labels:
+        app: flink
+        component: jobmanager
+    spec:
+      containers:
+      - name: jobmanager
+        image: optimusacr01.azurecr.io/flink:3.1.0
+        imagePullPolicy: Always
+        args: ["jobmanager"]
+        resources:
+          limits:
+            cpu: 0.5
+            memory: 1G
+          requests:
+            cpu: 0.2
+            memory: 1G
+        securityContext:
+          privileged: false
+          runAsUser: 9999
+          runAsNonRoot: true
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: false
+        env:
+         - name: mongodb.cosmos.host
+           valueFrom:
+            configMapKeyRef:
+             name: mongodbcosmos
+             key: mongodb.cosmos.host
+         - name: mongodb.cosmos.port
+           valueFrom:
+            configMapKeyRef:
+             name: mongodbcosmos
+             key: mongodb.cosmos.port
+         - name: mongodb.cosmos.username
+           valueFrom:
+            secretKeyRef:
+             name: mongodbcosmos
+             key: mongodb.cosmos.username
+         - name: mongodb.cosmos.password
+           valueFrom:
+            secretKeyRef:
+             name: mongodbcosmos
+             key: mongodb.cosmos.password
+        ports:
+        - containerPort: 6123
+          name: rpc
+        - containerPort: 6124
+          name: blob-server
+        - containerPort: 8081
+          name: webui
+        livenessProbe:
+          tcpSocket:
+            port: 6123
+          initialDelaySeconds: 30
+          periodSeconds: 60
+        volumeMounts:
+        - name: flink-config-volume
+          mountPath: /opt/flink/conf
+        - name: optimus-flink-jobmanager
+          mountPath: /opt/optimus
+        - name: optimus-flink-jobmanager-logs
+          mountPath: /var/log/optimus
+        - name: optimus-share
+          mountPath: /opts3
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: flink-config-volume
+        configMap:
+          name: flink-config
+          items:
+          - key: flink-conf.yaml
+            path: flink-conf.yaml
+          - key: log4j-console.properties
+            path: log4j-console.properties
+      - name: optimus-flink-jobmanager
+        hostPath:
+         path: /opt/optimus/flinkjob
+      - name: optimus-flink-jobmanager-logs
+        hostPath:
+         path: /var/log/optimus/flink
+      - name: optimus-share
+        hostPath:
+         path: /opts3
+      - name: tmp
+        emptyDir: {}
+      serviceAccountName: ""
+      automountServiceAccountToken: false
+      nodeSelector:
+        optimusnode: eksnode02uat

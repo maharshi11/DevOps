@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flink-taskmanager
+  namespace: optimus-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flink
+      component: taskmanager
+  template:
+    metadata:
+      labels:
+        app: flink
+        component: taskmanager
+    spec:
+      containers:
+      - name: taskmanager
+        image: optimusacr01.azurecr.io/flink:3.1.0
+        imagePullPolicy: Always
+        args: ["taskmanager"]
+        resources:
+          limits:
+            cpu: 1
+            memory: 3G
+          requests:
+            cpu: 0.5
+            memory: 2G
+        securityContext:
+          privileged: false
+          runAsUser: 9999
+          runAsNonRoot: true
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: false
+        env:
+         - name: mongodb.cosmos.host
+           valueFrom:
+            configMapKeyRef:
+             name: mongodbcosmos
+             key: mongodb.cosmos.host
+         - name: mongodb.cosmos.port
+           valueFrom:
+            configMapKeyRef:
+             name: mongodbcosmos
+             key: mongodb.cosmos.port
+         - name: mongodb.cosmos.username
+           valueFrom:
+            secretKeyRef:
+             name: mongodbcosmos
+             key: mongodb.cosmos.username
+         - name: mongodb.cosmos.password
+           valueFrom:
+            secretKeyRef:
+             name: mongodbcosmos
+             key: mongodb.cosmos.password
+        ports:
+        - containerPort: 6122
+          name: rpc
+        - containerPort: 6125
+          name: query-state
+        livenessProbe:
+          tcpSocket:
+            port: 6122
+          initialDelaySeconds: 30
+          periodSeconds: 60
+        volumeMounts:
+        - name: flink-config-volume
+          mountPath: /opt/flink/conf/
+        - name: optimus-flink-taskmanager
+          mountPath: /opt/optimus
+        - name: optimus-flink-taskmanager-logs
+          mountPath: /var/log/optimus
+        - name: optimus-share
+          mountPath: /opts3
+        - name: optimus-share-report
+          mountPath: /home/download
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: flink-config-volume
+        configMap:
+          name: flink-config
+          items:
+          - key: flink-conf.yaml
+            path: flink-conf.yaml
+          - key: log4j-console.properties
+            path: log4j-console.properties
+      - name: optimus-flink-taskmanager
+        hostPath:
+         path: /opt/optimus/flink
+      - name: optimus-flink-taskmanager-logs
+        hostPath:
+         path: /var/log/optimus/flinktask
+      - name: optimus-share
+        hostPath:
+         path: /opts3demo
+      - name: optimus-share-report
+        hostPath:
+         path: /opts3demo/optimus-share/reportwizard
+      - name: tmp
+        emptyDir: {}
+      serviceAccountName: ""
+      automountServiceAccountToken: false
+      nodeSelector:
+        optimusnode: eksnode01uat
+
