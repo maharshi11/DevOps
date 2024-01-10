@@ -1,0 +1,119 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: report-srv
+ namespace: optimus-demo
+ labels:
+  app: reportsrv
+spec:
+ selector:
+  matchLabels:
+   app: reportsrv
+ replicas: 1
+ template:
+  metadata:
+   labels:
+    app: reportsrv
+  spec:
+   volumes:
+    - name: report-srv-volume
+      configMap:
+        name: report-srv-config
+        items:
+        - key: application.yml
+          path: application.yml
+    - name: optimus-report-server
+      hostPath:
+       path: /opt/optimus/report_srv
+    - name: optimus-report-server-logs
+      hostPath:
+       path: /var/log/optimus/report-srv
+    - name: tmp
+      emptyDir: {}
+   serviceAccountName: ""
+   automountServiceAccountToken: false  
+   containers:
+    - name: report-server
+      image: optimusacr01.azurecr.io/report-server:3.1.0
+      imagePullPolicy: Always
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: "0.5"
+        limits:
+          memory: "2Gi"
+          cpu: "1"
+      securityContext:
+        privileged: false
+        runAsNonRoot: false
+        readOnlyRootFilesystem: false
+        allowPrivilegeEscalation: false
+      env:
+       - name: mongodb.cosmos.host
+         valueFrom:
+          configMapKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.host
+       - name: mongodb.cosmos.port
+         valueFrom:
+          configMapKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.port
+       - name: azurejwks-url
+         valueFrom:
+          configMapKeyRef:
+           name: optimus
+           key: azurejwks-url
+       - name: mongodb.cosmos.username
+         valueFrom:
+          secretKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.username
+       - name: mongodb.cosmos.password
+         valueFrom:
+          secretKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.password
+       - name: jwt.secretKey
+         valueFrom:
+          secretKeyRef:
+           name: token
+           key: jwt.secretKey
+       - name: refToken.key
+         valueFrom:
+          secretKeyRef:
+           name: token
+           key: refToken.key
+      volumeMounts:
+       - name: report-srv-volume
+         mountPath: /tmp/conf
+       - name: optimus-report-server
+         mountPath: /opt/optimus
+       - name: optimus-report-server-logs
+         mountPath: /var/log/optimus
+       - name: tmp
+         mountPath: /tmp
+      ports:
+       - containerPort: 8035
+   nodeSelector:
+     optimusnode: eksnode02uat
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+   name: report-service
+   namespace: optimus-demo
+   labels:
+    app: reportsrv
+spec:
+   selector:
+    app: reportsrv
+   ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8035
+
