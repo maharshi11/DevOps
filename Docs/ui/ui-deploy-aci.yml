@@ -1,0 +1,74 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: ui-aci
+ namespace: optimus-demo
+ labels:
+  app: ui-aci
+spec:
+ selector:
+  matchLabels:
+   app: ui-aci
+ replicas: 1
+ revisionHistoryLimit: 5
+ template:
+  metadata:
+   labels:
+    app: ui-aci
+  spec:
+   volumes:
+    - name: ui-aci
+      hostPath:
+       path: /opt/optimus/ui-aci
+    - name: ui-logs-aci
+      hostPath:
+       path: /var/log/optimus/ui-logs-aci
+    - name: tmp
+      emptyDir: {}
+   serviceAccountName: ""
+   automountServiceAccountToken: false
+   containers:
+    - name: ui-server-aci
+      image: optimusacr01.azurecr.io/ui:2.16.3-reportWizard-tag-fix-prod-aci
+      imagePullPolicy: Always
+      resources:
+        limits:
+          cpu: 1
+          memory: 1G
+        requests:
+          cpu: 0.5
+          memory: 0.5G
+      securityContext:
+        privileged: false
+        runAsUser: 2000
+        runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+      volumeMounts:
+       - name: ui-aci
+         mountPath: /opt/optimus
+       - name: ui-logs-aci
+         mountPath: /var/log/optimus
+       - name: tmp
+         mountPath: /tmp
+      ports:
+       - containerPort: 3000
+   nodeSelector:
+     optimusnode: eksnode03uat
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: ui-service-aci
+   namespace: optimus-demo
+   labels:
+    app: ui-aci
+spec:
+   selector:
+    app: ui-aci
+   ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
