@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: optimus-ui-service
+ namespace: optimus-demo
+ labels:
+  app: optimus-ui-service
+spec:
+ selector:
+  matchLabels:
+   app: optimus-ui-service
+ replicas: 1
+ revisionHistoryLimit: 5
+ template:
+  metadata:
+   labels:
+    app: optimus-ui-service
+  spec:
+   volumes:
+    - name: optimus-ui-server
+      hostPath:
+       path: /opt/optimus/admin_srv
+    - name: optimus-ui-logs
+      hostPath:
+       path: /var/log/optimus/optimus-ui-service
+   containers:
+    - name: optimus-ui-server
+      image: optimusacr01.azurecr.io/optimus-ui:1.0
+      imagePullPolicy: Always
+      env:
+       - name: DATABASE_URI
+         valueFrom:
+          secretKeyRef:
+           name: mongodbcosmos
+           key: DATABASE_URI
+      volumeMounts:
+       - name: optimus-ui-server
+         mountPath: /opt/optimus/admin_srv
+       - name: optimus-ui-logs
+         mountPath: /var/log/optimus/optimus-ui-service
+      ports:
+       - containerPort: 4000
+   nodeSelector:
+     optimusnode: eksnode03uat
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+   name: optimus-ui-services
+   namespace: optimus-demo
+   labels:
+    app: optimus-ui-service
+spec:
+   selector:
+    app: optimus-ui-service
+   ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 4000
+
