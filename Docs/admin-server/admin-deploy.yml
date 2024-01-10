@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: admin-srv
+ namespace: optimus-demo
+ labels:
+  app: admin-srv
+spec:
+ selector:
+  matchLabels:
+   app: admin-srv
+ replicas: 1
+ revisionHistoryLimit: 5
+ template:
+  metadata:
+   labels:
+    app: admin-srv
+  spec:
+   volumes:
+    - name: admin-srv-config-volume
+      configMap:
+        name: admin-srv-config
+        items:
+        - key: application.yml
+          path: application.yml
+    - name: optimus-admin-server
+      hostPath:
+       path: /opt/optimus/admin_srv
+    - name: optimus-admin-logs
+      hostPath:
+       path: /var/log/optimus/admin-srv
+    - name: tmp
+      emptyDir: {}
+   serviceAccountName: ""
+   automountServiceAccountToken: false  
+   containers:
+    - name: admin-server
+      image: optimusacr01.azurecr.io/admin-server:3.1.0
+      imagePullPolicy: Always
+      resources:
+        limits:
+          cpu: 0.2
+          memory: 0.5G
+        requests:
+          cpu: 0.2
+          memory: 0.2G
+      securityContext:
+        privileged: false
+        runAsUser: 2000
+        runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+      env:
+       - name: mongodb.cosmos.host
+         valueFrom:
+          configMapKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.host
+       - name: mongodb.cosmos.port
+         valueFrom:
+          configMapKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.port
+       - name: azurejwks-url
+         valueFrom:
+          configMapKeyRef:
+           name: optimus
+           key: azurejwks-url
+       - name: mongodb.cosmos.username
+         valueFrom:
+          secretKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.username
+       - name: mongodb.cosmos.password
+         valueFrom:
+          secretKeyRef:
+           name: mongodbcosmos
+           key: mongodb.cosmos.password
+       - name: jwt.secretKey
+         valueFrom:
+          secretKeyRef:
+           name: token
+           key: jwt.secretKey
+       - name: refToken.key
+         valueFrom:
+          secretKeyRef:
+           name: token
+           key: refToken.key
+      volumeMounts:
+       - name: admin-srv-config-volume
+         mountPath: /tmp/conf
+       - name: optimus-admin-server
+         mountPath: /opt/optimus/admin_srv
+       - name: optimus-admin-logs
+         mountPath: /var/log/optimus
+       - name: tmp
+         mountPath: /tmp
+      ports:
+       - containerPort: 8036
+   nodeSelector:
+     optimusnode: eksnode03uat
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+   name: admin-service
+   namespace: optimus-demo
+   labels:
+    app: admin-srv
+spec:
+   selector:
+    app: admin-srv
+   ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8036
+
