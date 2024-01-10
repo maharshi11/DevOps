@@ -1,0 +1,54 @@
+optimus:
+  mongo:
+    tenantProperties:
+      common:
+        uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/common?ssl=true&authSource=admin
+        database: common
+      optimus:
+        uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/optimus?ssl=true&authSource=admin
+        database: optimus
+      aci:
+        uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/aci?ssl=true&authSource=admin
+        database: aci
+      optimusfin:
+        uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/optimusfin?ssl=true&authSource=admin
+        database: optimusfin
+      optimusops:
+        uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/optimusops?ssl=true&authSource=admin
+        database: optimusops
+      aciworldwide:
+        uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/aciworldwide?ssl=true&authSource=admin
+        database: aciworldwide
+      adidas-aciworldwide:
+        uri: mongodb+srv://${mongodb.cosmos.username}:${mongodb.cosmos.password}@${mongodb.cosmos.host}/adidas-aciworldwide?ssl=true&authSource=admin
+        database: adidas-aciworldwide
+
+caseUrls:
+  create-batch: http://${CASEMGMT_SERVICE_SERVICE_HOST}:80/case/batch
+  add-case: http://${CASEMGMT_SERVICE_SERVICE_HOST}:80/case/issues
+  process-batch: http://${CASEMGMT_SERVICE_SERVICE_HOST}:80/case/batch/%s
+  get-case-template: http://${CASEMGMT_SERVICE_SERVICE_HOST}:80/case/casetemplate/internal/%s
+  
+statusUpdate:     
+  batchSize : 5
+
+progressive:
+  weightage:
+    matched:
+      singleMatch: 1f
+      multiMatch: 0.75f
+    unMatched:
+      singleMatch: 0.5f
+      multiMatch: 0.25f
+    matchedWithInTolerance:
+      singleMatch: 0.65f
+      multiMatch: 0.55f
+    noData:
+      firstMatch: 0.1f
+      lastMatch: 0.2f
+  skipRecord:
+    maxSkipCount: 2
+    minLimit: 0
+    maxLimit: 14
+
+
