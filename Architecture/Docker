@@ -1,0 +1,18 @@
+Docker Architecture:
+====================
+Docker architecture divide into 3 parts, such as client, docker daemon and registry.
+Client:
+client is nothing but user, who is going to give the request like, docker build, docker pull,
+docker start container, these kind of instruction we are going to give through client to the daemon.
+API will take the request and sends the instruction to daemon.
+
+Daemon:
+Daemon will listen request from the API,then it will create images, containers, volumes, network, 
+one daemon will communicate with other daemon also.
+
+Host:
+Host is nothing but where the docker engine is installed.
+
+Registry:
+Registry nothing but the repository where we are going to keep our images, containers in repository.
+-----------------------
