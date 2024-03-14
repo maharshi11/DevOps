@@ -1,0 +1,25 @@
+Kubernetes architecture:
+========================
+kubernetes architecture divided into 2 parts, Master node and Worker Node.
+Master node consists of etcd, API server, controller manager and scheduler.
+etcd:
+etcd is a distributed key-value store used to store the cluster's configuration data.
+API Server:
+API Server is used to inter-connect with all devices in Master node and worker nodes. Master node every action
+should be taken from API only.
+Scheduler: 
+Assigns workloads to nodes.It is going to schedule particular pod into particular node.
+Controller Manager:
+We have service controller manager, cloud controller manager, replication controller manager, it is 
+going to controll the servies and number of the pods so where it's going to deploy on a particular node.
+
+Worker Nodes:
+We have kube-proxy, kubelet, Pod.
+Kube-Proxy: used to expose our services on top of the container to the end user.
+Kubelet: it is main reason to create a pod inside the node. Kubelet is an agent running on each node, responsible for communication between the node and the master.
+
+Pod:
+A pod is the smallest unit of scheduling in Kubernetes. Without it, a container cannot be part of a cluster. If we need to scale our app, we can only do so by adding or removing pods.
+
+(Container Runtime
+The container runtime pulls images from a container image registry and starts and stops containers. A 3rd party software or plugin, such as Docker, usually performs this function.)
